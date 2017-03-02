@@ -27,7 +27,8 @@ easyexif::EXIFInfo read_exif_single(std::string file){
   int code = result.parseFrom(buf, fsize);
   delete[] buf;
   if(code){
-    throw std::range_error("Can't parse information in file: " + file);
+    // throw std::range_error("Can't parse information in file: " + file);
+    // return ;
   }
   
   // Return
@@ -74,40 +75,47 @@ DataFrame read_exif_(std::vector < std::string > files){
   for(unsigned int i = 0; i < input_size; i++){
     
     // Retrieve data
-    easyexif::EXIFInfo result = read_exif_single(files[i]);
+    try{
+      easyexif::EXIFInfo result = read_exif_single(files[i]);
+      
+      // Pass values through
+      makes[i] = result.Make;
+      models[i] = result.Model;
+      software[i] = result.Software;
+      bits[i] = result.BitsPerSample;
+      image_width[i] = result.ImageWidth;
+      image_height[i] = result.ImageHeight;
+      descriptions[i] = result.ImageDescription;
+      orientations[i] = result.Orientation;
+      copyright[i] = result.Copyright;
+      dt[i] = result.DateTime;
+      dt_origin[i] = result.DateTimeOriginal;
+      dt_digit[i] = result.DateTimeDigitized;
+      subsecond[i] = result.SubSecTimeOriginal;
+      exposure_time[i] = (1.0/result.ExposureTime);
+      f_stop[i] = result.FNumber;
+      iso_speed[i] = result.ISOSpeedRatings;
+      subject_dist[i] = result.SubjectDistance;
+      exposure_bias[i] = result.ExposureBiasValue;
+      flash[i] = ((int)result.Flash != 0);
+      metering[i] = result.MeteringMode;
+      focal_length[i] = result.FocalLength;
+      focal_length_35mm[i] = result.FocalLengthIn35mm;
+      latitude[i] =  result.GeoLocation.Latitude;
+      longitude[i] = result.GeoLocation.Longitude;
+      altitude[i] = result.GeoLocation.Altitude;
+      lens_min_focal_length[i] = result.LensInfo.FocalLengthMin;
+      lens_max_focal_length[i] = result.LensInfo.FocalLengthMax;
+      lens_min_f_stop[i] = result.LensInfo.FStopMin;
+      lens_max_f_stop[i] = result.LensInfo.FStopMax;
+      lens_make[i] = result.LensInfo.Make;
+      lens_model[i] = result.LensInfo.Model;
+      
+    }
+    catch (exception& e){
+      continue;  
+    }
     
-    // Pass values through
-    makes[i] = result.Make;
-    models[i] = result.Model;
-    software[i] = result.Software;
-    bits[i] = result.BitsPerSample;
-    image_width[i] = result.ImageWidth;
-    image_height[i] = result.ImageHeight;
-    descriptions[i] = result.ImageDescription;
-    orientations[i] = result.Orientation;
-    copyright[i] = result.Copyright;
-    dt[i] = result.DateTime;
-    dt_origin[i] = result.DateTimeOriginal;
-    dt_digit[i] = result.DateTimeDigitized;
-    subsecond[i] = result.SubSecTimeOriginal;
-    exposure_time[i] = (1.0/result.ExposureTime);
-    f_stop[i] = result.FNumber;
-    iso_speed[i] = result.ISOSpeedRatings;
-    subject_dist[i] = result.SubjectDistance;
-    exposure_bias[i] = result.ExposureBiasValue;
-    flash[i] = ((int)result.Flash != 0);
-    metering[i] = result.MeteringMode;
-    focal_length[i] = result.FocalLength;
-    focal_length_35mm[i] = result.FocalLengthIn35mm;
-    latitude[i] =  result.GeoLocation.Latitude;
-    longitude[i] = result.GeoLocation.Longitude;
-    altitude[i] = result.GeoLocation.Altitude;
-    lens_min_focal_length[i] = result.LensInfo.FocalLengthMin;
-    lens_max_focal_length[i] = result.LensInfo.FocalLengthMax;
-    lens_min_f_stop[i] = result.LensInfo.FStopMin;
-    lens_max_f_stop[i] = result.LensInfo.FStopMax;
-    lens_make[i] = result.LensInfo.Make;
-    lens_model[i] = result.LensInfo.Model;
   }
   
   // Create and return output
